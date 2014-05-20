@@ -5,15 +5,17 @@ import akka.pattern.ask
 import akka.util.Timeout
 import scala.util._
 import scala.concurrent.{Future}
-import scala.concurrent.duration._
 import harvester.{HarvestingStatus, Criteria, SailingDAOImpl}
+import scala.concurrent.duration._
 import scala.xml.{Elem, NodeSeq}
 import play.libs.Json._
 import akka.actor.{ActorSystem, Props}
 import play.api.mvc._
 import play.Logger
+
 import play.api.libs.json.Json
-import actors.{StatusActor, CategoryInfoActor}
+import actors.{HarvestingActor, StatusActor, CategoryInfoActor}
+import play.Play
 
 object Application extends Controller {
 
@@ -21,26 +23,21 @@ object Application extends Controller {
 
   implicit val ec = actorSystem.dispatcher
 
-  private val url = "http://devtsl.dev.sabre.com:9001/tvly-css-service-1.0/remote-service/categoryInfo/0"
-
+  private val url = Play.application.configuration.getString("cruise.service.url")
 
   val statusActor = actorSystem.actorOf(Props(classOf[StatusActor], new HarvestingStatus()), "statusActor")
 
   implicit val timeout = Timeout(30 seconds)
 
-  def index = Action {
-    val dao = new SailingDAOImpl
-    val sailings = dao.getSailing(Criteria.loadCriteria())
+  var started = false
 
-    statusActor ! sailings.size
-    var startTime: Double = 0
-    sailings.foreach(sailing => {
-      val harvestingActor = actorSystem.actorOf(Props(classOf[CategoryInfoActor], url))
-      startTime = startTime + (math.random * 10)
-      Logger.info("Start time" + startTime)
-      actorSystem.scheduler.scheduleOnce(startTime.seconds, harvestingActor, sailing)
+  def index(vendorCode:String,minDays:String,maxDays:String) = Action {
+    if (!started) {
+      val criteria = new Criteria(vendorCode.split(",").toList,minDays.toInt,maxDays.toInt)
+      val harvestingActor = actorSystem.actorOf(Props(classOf[HarvestingActor], url, criteria), "harvestingActor")
+      actorSystem.scheduler.schedule(0.millisecond, 12.hours, harvestingActor, "start")
+      started = true
     }
-    )
     Ok(views.html.index())
   }
 
@@ -62,6 +59,10 @@ object Application extends Controller {
         ))
       case t: String => InternalServerError(t)
     }
+  }
+
+  def shutdown = {
+    actorSystem.shutdown()
   }
 
 }

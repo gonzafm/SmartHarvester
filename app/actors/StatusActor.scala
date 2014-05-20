@@ -24,14 +24,12 @@ class StatusActor(val harvestingStatus: HarvestingStatus) extends Actor {
        harvestingStatus.increaseFailure()
     }
     case "Status" => {
-      Logger.info("I received a status request ")
       sender ! harvestingStatus
     }
 
     case totalValue:Int => harvestingStatus.total = totalValue
 
     case _ => {
-      Logger.info("I received a crazy ")
     }
   }
 }

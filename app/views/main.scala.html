@@ -4,7 +4,7 @@
 
 <html ng-app>
     <head>
-        <title>@title</title>
+        <title>Cruise Smart Harvester Dashboard</title>
         <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/main.css")">
         <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/main.css")">
         <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/bootstrap.min.css")">
@@ -14,11 +14,20 @@
         <script src="@routes.Assets.at("javascripts/controller.js")"></script>
     </head>
     <body>
-        <div ng-controller="HarvestingStatus">
-            <p>Total {{harvestingStatus.total}}</p>
-            <p>Here goes the success {{harvestingStatus.success}}</p>
-            <p>And here the failure {{harvestingStatus.failure}}</p>
-            <button ng-click="loadData()">Refresh</button>
+        <div class="container-fluid">
+            <div>
+                <div class="progress progress-striped active">
+                    <div class="progress-bar" role="progressbar" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100" style="width : 45 %">
+                        <span class="sr-only">45% Complete</span>
+                    </div>
+                </div>
+                <div ng-controller="HarvestingStatus">
+                    <p>Total {{harvestingStatus.total}}</p>
+                    <p>Here goes the success {{harvestingStatus.success}}</p>
+                    <p>And here the failure {{harvestingStatus.failure}}</p>
+                    <button ng-click="loadData()">Refresh</button>
+                </div>
+            </div>
         </div>
     </body>
 </html>

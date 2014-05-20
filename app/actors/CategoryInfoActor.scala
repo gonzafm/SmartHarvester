@@ -32,20 +32,23 @@ class CategoryInfoActor(url: String) extends Actor {
         case Success(response: Response) =>
           response.status match {
             case Status.OK => {
-              Logger.info("Sending a success message")
+              Logger.info("Sending a success message for sailing " + aSailing.externalSailingId
+                + " for date " + aSailing.sailingDate)
               statusActor ! "Success"
             }
             case x => {
               statusActor ! "Failure"
-              Logger.error(response.xml.text)
+              Logger.error(CategoryInfoRequest.toXml(request).toString())
+              Logger.error(response.body)
             }
           }
         case Failure(response: Response) => {
           statusActor !"Failure"
-          Logger.error(response.xml.text)
+          Logger.error(CategoryInfoRequest.toXml(request).toString())
+          Logger.error(response.body)
         }
       }
     }
-    case _ => Logger.error("Que se yo")
+    case _ => Logger.error("Unnexpected error")
   }
 }

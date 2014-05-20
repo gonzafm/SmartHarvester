@@ -1,9 +1,23 @@
 # Routes
 # This file defines all application routes (Higher priority routes first)
 # ~~~~
-
-# Home page
-GET        /                    controllers.Application.index
+#
+#AM 70  AMA Waterways
+#AZ 57  Azamara Club Cruises
+#CV 9   Carnival Cruise Lines
+#CB 14  Celebrity Cruises
+#CO 52  Costa Cruises
+#CS 45  Crystal Cruises
+#CU 54  Cunard
+#DS 24  Disney Cruise Line
+#HA 15  Holland America Line
+#MS 51  MSC Cruises
+#NC 7   Norwegian Cruise Line
+#OE 48  Oceania Cruises
+#PC 28  Princess Cruises
+#RE 46  Regent Seven Seas Cruises
+#RC 5   Royal Caribbean# Home page
+GET        /                    controllers.Application.index(vendorCode ?= "AM,AZ,CV,CB,CO,CS,CU,DS,HA,MS,NC,OE,PC,RE,RC",minDays ?= "3",maxDays ?= "180")
 
 GET        /status              controllers.Application.status
 
